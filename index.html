@@ -97,15 +97,12 @@
             justify-content: center;
             align-items: center;
         }
-        .cube {
-            width: 100px;
-            height: 100px;
-            background-color: #007BFF;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: rotate 5s infinite linear;
+        .image-container {
+            width: 100px; /* Set the width of the image */
+            height: 100px; /* Set the height of the image */
+            animation: spin 5s infinite linear; /* Spin animation */
         }
-        @keyframes rotate {
+        @keyframes spin {
             from { transform: rotateY(0); }
             to { transform: rotateY(360deg); }
         }
@@ -181,7 +178,9 @@
 </section>
 
 <section class="animation">
-    <div class="cube"></div>
+    <div class="image-container">
+        <img src="images/professional.png" alt="Professional Image" style="width: 100%; height: 100%; border-radius: 10px;"/>
+    </div>
 </section>
 
 <section>
@@ -195,8 +194,8 @@
 <section>
     <h2>Languages</h2>
     <ul>
-        <li><strong>English:</strong> Professional Working Proficiency</li>
-        <li><strong>Chinese:</strong> Limited Working Proficiency</li>
+        <li><strong>English:</strong> Professional Working Proficiency: Written and Spoken</li>
+        <li><strong>Chinese:</strong> Limited Working Proficiency: Spoken only</li>
     </ul>
 </section>
 
