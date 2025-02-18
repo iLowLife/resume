@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Resume/Portfolio</title>
+    <title>Low Cheng Feng's Resume</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
@@ -17,20 +17,46 @@
             color: white;
             padding: 20px;
             text-align: center;
+            position: relative;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        header p {
+            font-size: 1.2em;
+            margin: 5px 0;
         }
         section {
             margin: 20px;
             padding: 20px;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         h2 {
             text-align: center;
+            font-size: 1.8em;
+            color: #007BFF;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #007BFF;
+            padding-bottom: 5px;
             transition: color 0.3s;
         }
         h2:hover {
-            color: #007BFF;
+            color: #0056b3;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+            padding: 5px;
+            transition: transform 0.3s;
+        }
+        li:hover {
+            transform: translateX(5px);
         }
         .skills {
             display: flex;
@@ -41,6 +67,10 @@
             width: 30%;
             margin: 10px;
             text-align: center;
+            padding: 10px;
+            background: #e7f1ff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
         }
         .skill:hover {
@@ -51,12 +81,15 @@
             height: 200px;
             perspective: 1000px;
             margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         .cube {
             width: 100px;
             height: 100px;
             background-color: #007BFF;
-            position: absolute;
+            position: relative;
             transform-style: preserve-3d;
             animation: rotate 5s infinite linear;
         }
@@ -64,48 +97,74 @@
             from { transform: rotateY(0); }
             to { transform: rotateY(360deg); }
         }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #007BFF;
+            color: white;
+            position: relative;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>LOW CHENG FENG</h1>
-    <p> Python | Web Developer | Designer | Troubleshooter </p>
+    <h1>Low Cheng Feng</h1>
+    <p>Final Year Computer Engineering Student</p>
+    <p>Email: CLOW033@student.main.edu.sg | Phone: 91186584 | Location: Singapore</p>
+    <p>Date of Birth: 17 December 1996</p>
 </header>
 
 <section>
     <h2>About Me</h2>
-    <p>I'm a passionate web developer with a knack for creating interactive and user-friendly web applications. I love coding and continuously improving my skills.</p>
-</section>
-
-<section>
-    <h2>Work Experience</h2>
-    <ul>
-        <li><strong>Process Engineer Intern</strong> at Skyworks Global Pte. Ltd (2024 January - 2024 August)</li>
-        <li><strong>Software Engineer Intern</strong> at Infineon Technologies: Semiconductor & System Solutions (2020 Febuary - 2020 August)</li>
-        <li><strong>Frontend Developer</strong> at ABC Inc. (2019 - 2021)</li>
-    </ul>
+    <p>Results-driven Computer Engineering student with hands-on experience in software development, data processing, and automation. Seeking to leverage strong technical skills and proven ability to troubleshoot issues and collaborate on IT projects.</p>
 </section>
 
 <section>
     <h2>Education</h2>
     <ul>
-        <li><strong>Bachelor in Computer Engineering</strong> - University of Nanyang Technological University (2021 - 2025)</li>
-        <li><strong>Diploma in Computer Engineering</strong> - Temasek Polytechnic (2018-2021)</li>
-        <li><strong>Higher NITEC in Electrical Engineering</strong> - ITE College East (2015-2016)</li>
-        <li><strong>NITEC in Electrical Engineering: Power and Control</strong> - ITE College East (2013-2015)</li>
+        <li><strong>Bachelor Degree in Computer Engineering</strong> - Nanyang Technological University (08/2021 - Present, 3.60 GPA)</li>
+        <li><strong>Diploma in Computer Engineering</strong> - Temasek Polytechnic (04/2018 - 05/2021, 3.93 GPA)</li>
+        <li>Director's List (2019 - 2021)</li>
+        <li>Class Chairman (2019 - 2020)</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Personal Projects</h2>
+    <ul>
+        <li><strong>Website and Database Design UI/UX</strong> (03/2021) - ASP.NET website project for community, database management using SQL.</li>
+        <li><strong>Hardware and Embedded System</strong> (08/2023 - 09/2023) - Embedded circuit analysis programming using C, Micro Mouse to solve maze.</li>
+        <li><strong>IoT Project</strong> - Raspberry Pi and Arduino integration.</li>
+        <li><strong>Mobile Application</strong> - Developed Android and iOS app using Flutter, Firebase, and Firestore.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Work Experience</h2>
+    <ul>
+        <li><strong>Yield Engineer (Internship)</strong> at Skyworks (01/2024 - 07/2024) - ETL process using Python, data cleaning, and visualization.</li>
+        <li><strong>Software Engineer (Internship)</strong> at Infineon Asia Pacific (02/2020 - 08/2020) - Automated tasks with Microsoft Visual Basic, managed databases.</li>
     </ul>
 </section>
 
 <section>
     <h2>Skills</h2>
     <div class="skills">
+        <div class="skill">C</div>
+        <div class="skill">C#</div>
+        <div class="skill">C++</div>
+        <div class="skill">Python</div>
+        <div class="skill">Java</div>
+        <div class="skill">JavaScript</div>
+        <div class="skill">ASP.NET</div>
         <div class="skill">HTML</div>
         <div class="skill">CSS</div>
-        <div class="skill">JavaScript</div>
-        <div class="skill">React</div>
-        <div class="skill">Node.js</div>
-        <div class="skill">Python</div>
+        <div class="skill">MySQL</div>
+        <div class="skill">MongoDB</div>
+        <div class="skill">React Native</div>
+        <div class="skill">Flutter</div>
     </div>
 </section>
 
@@ -114,11 +173,35 @@
 </section>
 
 <section>
-    <h2>Contact</h2>
-    <p>Email: johndoe@example.com</p>
-    <p>LinkedIn: linkedin.com/in/johndoe</p>
-    <p>GitHub: github.com/johndoe</p>
+    <h2>Co-Curricular Activities / Awards</h2>
+    <ul>
+        <li><strong>Temasek Polytechnic Engineering Maker’s Club</strong> (07/2018 - 04/2020) - Organized events and workshops.</li>
+        <li><strong>Tikuk-Olum Google Makerton</strong> (2019) - Second runner-up in competition.</li>
+    </ul>
 </section>
+
+<section>
+    <h2>Languages</h2>
+    <ul>
+        <li><strong>English:</strong> Professional Working Proficiency</li>
+        <li><strong>Chinese:</strong> Limited Working Proficiency</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Interests</h2>
+    <ul>
+        <li>DIY</li>
+        <li>Content Creation</li>
+        <li>Badminton</li>
+        <li>Coffee</li>
+        <li>Computer Engineering</li>
+    </ul>
+</section>
+
+<footer>
+    <p>&copy; 2025 Low Cheng Feng. All Rights Reserved.</p>
+</footer>
 
 </body>
 </html>
