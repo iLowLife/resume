@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Resume/Portfolio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background: #007BFF;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        section {
+            margin: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            transition: color 0.3s;
+        }
+        h2:hover {
+            color: #007BFF;
+        }
+        .skills {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .skill {
+            width: 30%;
+            margin: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .skill:hover {
+            transform: scale(1.1);
+        }
+        .animation {
+            width: 100%;
+            height: 200px;
+            perspective: 1000px;
+            margin: 20px 0;
+        }
+        .cube {
+            width: 100px;
+            height: 100px;
+            background-color: #007BFF;
+            position: absolute;
+            transform-style: preserve-3d;
+            animation: rotate 5s infinite linear;
+        }
+        @keyframes rotate {
+            from { transform: rotateY(0); }
+            to { transform: rotateY(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>John Doe</h1>
+    <p>Web Developer | Designer | Troubleshooter</p>
+</header>
+
+<section>
+    <h2>About Me</h2>
+    <p>I'm a passionate web developer with a knack for creating interactive and user-friendly web applications. I love coding and continuously improving my skills.</p>
+</section>
+
+<section>
+    <h2>Experience</h2>
+    <ul>
+        <li><strong>Web Developer</strong> at XYZ Company (2021 - Present)</li>
+        <li><strong>Frontend Developer</strong> at ABC Inc. (2019 - 2021)</li>
+        <li><strong>Intern</strong> at Tech Solutions (2018 - 2019)</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Education</h2>
+    <ul>
+        <li><strong>Bachelor of Science in Computer Science</strong> - University of Example (2014 - 2018)</li>
+        <li><strong>Web Development Bootcamp</strong> - Coding Academy (2019)</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Skills</h2>
+    <div class="skills">
+        <div class="skill">HTML</div>
+        <div class="skill">CSS</div>
+        <div class="skill">JavaScript</div>
+        <div class="skill">React</div>
+        <div class="skill">Node.js</div>
+        <div class="skill">Python</div>
+    </div>
+</section>
+
+<section class="animation">
+    <div class="cube"></div>
+</section>
+
+<section>
+    <h2>Contact</h2>
+    <p>Email: johndoe@example.com</p>
+    <p>LinkedIn: linkedin.com/in/johndoe</p>
+    <p>GitHub: github.com/johndoe</p>
+</section>
+
+</body>
+</html>
