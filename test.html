@@ -82,24 +82,21 @@
             text-align: center;
             padding: 20px;
         }
-        .hover-card {
+        .skill-card {
             background-color: #ffffff;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            height: 80px; /* Initial height */
-            width: 80%; /* Width of the card */
-            margin: 40px auto; /* Centered with margin */
+            padding: 15px;
+            margin: 10px;
+            width: 200px; /* Width of the skill card */
             text-align: center;
-            color: #333;
-            line-height: 80px; /* Center text vertically */
             transition: height 0.3s ease, line-height 0.3s ease;
         }
-        .hover-card:hover {
+        .skill-card:hover {
             height: 120px; /* Expanded height on hover */
             line-height: 120px; /* Center text vertically in expanded state */
         }
-        .new-section {
-            display: none; /* Initially hidden */
+        .awards-section {
             text-align: center;
             padding: 40px 0;
         }
@@ -166,25 +163,33 @@
     </div>
 </section>
 
-<div class="new-section" id="newSection">
+<div class="awards-section">
     <h2>Awards and Achievements</h2>
-    <div class="hover-card">
-        <p><strong>Tikuk-Olum Google Makerton</strong> (Aug 2018)</p>
-        <p>Collaborated with Google engineers and emerged second runner-up.</p>
-        <p>Designed a cooking stove to assist blind individuals in meal preparation.</p>
-    </div>
+    <p><strong>Tikuk-Olum Google Makerton</strong> (Aug 2018)</p>
+    <p>Collaborated with Google engineers and emerged second runner-up.</p>
+    <p>Designed a cooking stove to assist blind individuals in meal preparation.</p>
 </div>
 
 <section class="features">
-    <div class="feature visible">
-        <h2>Skills</h2>
-        <p>Proficient in:</p>
-        <ul>
-            <li>C, C++, Python, JavaScript, ASP.NET</li>
-            <li>VBA, Flutter, Dart, Oracle SQL, NoSQL</li>
-            <li>AutoCAD, Adobe Photoshop, Adobe Premiere Pro</li>
-        </ul>
+    <h2>Skills</h2>
+    <div class="features" style="display: flex; flex-wrap: wrap; justify-content: center;">
+        <div class="skill-card">C</div>
+        <div class="skill-card">C++</div>
+        <div class="skill-card">Python</div>
+        <div class="skill-card">JavaScript</div>
+        <div class="skill-card">ASP.NET</div>
+        <div class="skill-card">VBA</div>
+        <div class="skill-card">Flutter</div>
+        <div class="skill-card">Dart</div>
+        <div class="skill-card">Oracle SQL</div>
+        <div class="skill-card">NoSQL</div>
+        <div class="skill-card">AutoCAD</div>
+        <div class="skill-card">Adobe Photoshop</div>
+        <div class="skill-card">Adobe Premiere Pro</div>
     </div>
+</section>
+
+<section class="features">
     <div class="feature visible">
         <h2>Languages</h2>
         <p><strong>English:</strong> Proficient</p>
