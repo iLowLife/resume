@@ -40,23 +40,8 @@
             padding: 15px; /* Add padding for inner spacing */
             box-sizing: border-box; /* Ensure padding is included in total width/height */
             overflow: hidden; /* Hide the scrollbar */
-            
         }
 
-        /* Pseudo-element to manage the scrollable content */
-        .scroll-card::after {
-            content: "";
-            display: block;
-            height: 200px; /* Same as max-height */
-            overflow-y: scroll; /* Enable scrolling */
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0; /* Make it invisible */
-            pointer-events: none; /* Disable interaction with the pseudo-element */
-        }
         .hero {
             position: relative; /* Required for positioning the pseudo-element */
             height: 600px;
@@ -93,37 +78,19 @@
         }
         .hero p {
             font-size: 1.5em;
-            position: relative; /* Position text above the overlay */
-            z-index: 2; /* Ensure text is above the white overlay */
         }
+
         .features {
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 40px 20px;
         }
-        .feature {
-            text-align: center;
-            max-width: 800px;
-            margin: 20px 0;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        .feature.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        footer {
-            background-color: #000;
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
+
         .skills-container {
             display: flex;
-            flex-wrap: wrap; /* Allow wrapping to the next line */
-            justify-content: center; /* Center the items */
+            flex-wrap: wrap;
+            justify-content: center;
             margin: 20px 0; /* Add some margin */
         }
 
@@ -137,23 +104,49 @@
             text-align: center;
             transition: height 0.3s ease, line-height 0.3s ease;
         }
-        .skill-card:hover {
-            height: 80px; /* Expanded height on hover */
-            line-height: 80px; /* Center text vertically in expanded state */
-        }
-        .awards-section {
+
+        footer {
+            background-color: #000;
+            color: white;
             text-align: center;
-            padding: 40px 0;
+            padding: 20px;
         }
-        .image-container {
-            width: 100px; /* Set the width of the image */
-            height: 100px; /* Set the height of the image */
-            animation: spin 5s infinite linear; /* Spin animation */
-            margin: 20px auto; /* Center the image container */
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em; /* Smaller font size for mobile */
+            }
+            .hero p {
+                font-size: 1em; /* Smaller font size for mobile */
+            }
+            .scroll-card {
+                width: 90%; /* Increase width for mobile */
+                margin: 30px auto; /* Reduce margin */
+                padding: 10px; /* Less padding for mobile */
+            }
+            .skill-card {
+                width: 100px; /* Reduce card width for mobile */
+                padding: 10px; /* Less padding for mobile */
+            }
+            nav li {
+                display: block; /* Stack navigation items */
+                margin: 10px 0; /* Vertical spacing */
+            }
         }
-        @keyframes spin {
-            from { transform: rotateY(0); }
-            to { transform: rotateY(360deg); }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2em; /* Further reduce font size for mobile */
+            }
+            .hero p {
+                font-size: 0.9em; /* Further reduce font size for mobile */
+            }
+            .scroll-card {
+                width: 95%; /* Full width for very small screens */
+            }
+            .skill-card {
+                width: 80px; /* Further reduce card width for very small screens */
+            }
         }
     </style>
 </head>
