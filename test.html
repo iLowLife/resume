@@ -100,6 +100,16 @@
             text-align: center;
             padding: 40px 0;
         }
+        .image-container {
+            width: 100px; /* Set the width of the image */
+            height: 100px; /* Set the height of the image */
+            animation: spin 5s infinite linear; /* Spin animation */
+            margin: 20px auto; /* Center the image container */
+        }
+        @keyframes spin {
+            from { transform: rotateY(0); }
+            to { transform: rotateY(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -125,6 +135,10 @@
 
 <div class="scroll-card" id="scrollCard">
     Results-driven Computer Engineering student with hands-on experience in software development, data processing, and automation.
+</div>
+
+<div class="image-container">
+    <img src="images/professional.png" alt="Professional Image" style="width: 100%; height: 100%; border-radius: 10px;"/>
 </div>
 
 <section class="features">
