@@ -32,17 +32,33 @@
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             min-height: 120px; /* Minimum height to ensure visibility */
-            max-height: 200px; /* Set a maximum height */
+            max-height: 400px; /* Set a maximum height */
             width: 80%; /* Width of the card */
             margin: 60px auto; /* Centered with margin on top */
             text-align: center;
             color: #333;
             padding: 15px; /* Add padding for inner spacing */
             box-sizing: border-box; /* Ensure padding is included in total width/height */
-            overflow: auto; /* Allow scrolling if content exceeds max height */
+            overflow: hidden; /* Hide the scrollbar */
+            
+        }
+
+        /* Pseudo-element to manage the scrollable content */
+        .scroll-card::after {
+            content: "";
+            display: block;
+            height: 200px; /* Same as max-height */
+            overflow-y: scroll; /* Enable scrolling */
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0; /* Make it invisible */
+            pointer-events: none; /* Disable interaction with the pseudo-element */
         }
         .hero {
-            background-image: url('your-image-url.jpg'); /* Replace with your image */
+            background-image: url('images/professional.png'); /* Replace with your image */
             height: 600px;
             background-size: cover;
             background-position: center;
