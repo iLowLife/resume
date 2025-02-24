@@ -31,13 +31,15 @@
             background-color: #ffffff;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            height: 60px; /* Initial height */
+            min-height: 120px; /* Minimum height to ensure visibility */
+            max-height: 200px; /* Set a maximum height */
             width: 80%; /* Width of the card */
             margin: 60px auto; /* Centered with margin on top */
             text-align: center;
             color: #333;
-            line-height: 60px; /* Center text vertically */
-            transition: height 0.3s ease, line-height 0.3s ease;
+            padding: 15px; /* Add padding for inner spacing */
+            box-sizing: border-box; /* Ensure padding is included in total width/height */
+            overflow: auto; /* Allow scrolling if content exceeds max height */
         }
         .hero {
             background-image: url('your-image-url.jpg'); /* Replace with your image */
@@ -134,7 +136,10 @@
 </div>
 
 <div class="scroll-card" id="scrollCard">
-    Results-driven Computer Engineering student with hands-on experience in software development, data processing, and automation.
+    Results-driven Computer Engineering student with hands-on experience in software development, data
+    processing, and automation, seeking to leverage strong technical skills. Proven ability to troubleshoot
+    issues and collaborate on IT projects, with a keen interest in leading digital transformation initiatives to
+    enhance operational efficiency. 
 </div>
 
 <div class="image-container">
