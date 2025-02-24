@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apple Style Web Page</title>
+    <title>Low Cheng Feng's Resume</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -45,7 +45,7 @@
             background-size: cover;
             background-position: center;
             text-align: center;
-            color: white;
+            color: black;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -60,12 +60,14 @@
         }
         .features {
             display: flex;
-            justify-content: space-around;
+            flex-direction: column;
+            align-items: center;
             padding: 40px 20px;
         }
         .feature {
             text-align: center;
-            max-width: 300px;
+            max-width: 800px;
+            margin: 20px 0;
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.5s ease, transform 0.5s ease;
@@ -101,10 +103,6 @@
             text-align: center;
             padding: 40px 0;
         }
-        .hover-card p {
-            margin: 10px 0; /* Margin for text */
-            line-height: 1.3; /* Line height for text readability */
-        }
     </style>
 </head>
 <body>
@@ -113,53 +111,93 @@
     <nav>
         <ul>
             <li>Home</li>
-            <li>Products</li>
-            <li>About</li>
+            <li>Education</li>
+            <li>Experience</li>
+            <li>Projects</li>
+            <li>Skills</li>
+            <li>Awards</li>
             <li>Contact</li>
         </ul>
     </nav>
 </header>
 
 <div class="hero">
-    <h1>Product Name</h1>
-    <p>Catchy tagline goes here</p>
-    <button style="padding: 10px 20px; font-size: 1.2em;">Learn More</button>
+    <h1>Low Cheng Feng</h1>
+    <p>Mobile No.: 9118 6584 | Email: cheng_feng96@hotmail.com</p>
 </div>
 
 <div class="scroll-card" id="scrollCard">
-    Scroll to Resize Me!
-    <p style="margin: 5px 0;">This card resizes based on scroll position.</p>
+    Results-driven Computer Engineering student with hands-on experience in software development, data processing, and automation.
 </div>
 
 <section class="features">
-    <div class="feature">
-        <img src="feature1-image-url.jpg" alt="Feature 1"> <!-- Replace with your image -->
-        <h2>Feature 1</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <div class="feature visible">
+        <h2>Education</h2>
+        <p><strong>Bachelor’s Degree in Computer Engineering</strong> - Nanyang Technological University (Aug 2021 – Current, CGPA: 3.7/5.00)</p>
+        <p><strong>Diploma in Computer Engineering</strong> - Temasek Polytechnic (Apr 2018 – Apr 2021, CGPA: 3.91/4.00)</p>
     </div>
-    <div class="feature">
-        <img src="feature2-image-url.jpg" alt="Feature 2"> <!-- Replace with your image -->
-        <h2>Feature 2</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <div class="feature visible">
+        <h2>Work Experience</h2>
+        <p><strong>Process Yield Engineer (Intern)</strong> at Skyworks Solutions (Jan 2024 – Aug 2024)</p>
+        <ul>
+            <li>Created multiple ETL processes to automate cleaning and loading of data from machines into the database.</li>
+            <li>Created and managed dashboards using Microsoft PowerBI for directors and stakeholders.</li>
+            <li>Cooperated with overseas teams to build end-to-end dashboards from wafer fabrication to shipping.</li>
+        </ul>
+        <p><strong>Software Engineer (Intern)</strong> at Infineon Technologies (Feb 2020 – Aug 2020)</p>
+        <ul>
+            <li>Automated tasks using Microsoft Visual Basic, improving efficiency by 100%.</li>
+            <li>Designed and managed the company’s sub-branch database using SAPBO and Microsoft Excel.</li>
+            <li>Improved several project algorithms left by previous interns.</li>
+        </ul>
     </div>
-    <div class="feature">
-        <img src="feature3-image-url.jpg" alt="Feature 3"> <!-- Replace with your image -->
-        <h2>Feature 3</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <div class="feature visible">
+        <h2>Personal Projects</h2>
+        <p><strong>Mobile Application for Personal Coffee Business</strong></p>
+        <ul>
+            <li>Built a mobile application using Flutter with Firebase for database and storage.</li>
+            <li>Developed a kiosk for customers to order and collect points for rewards.</li>
+        </ul>
+        <p><strong>Computer Vision Inventory Tracking System</strong></p>
+        <ul>
+            <li>Applied machine learning for object detection using YOLOv11 to track items.</li>
+            <li>Developed a basic frontend with full functionality, featuring intuitive design.</li>
+        </ul>
     </div>
 </section>
 
 <div class="new-section" id="newSection">
-    <h2>Discover More</h2>
+    <h2>Awards and Achievements</h2>
     <div class="hover-card">
-        Hover Over Me!
-        <p>Get more details about our features.</p>
-        <p>Experience the best of technology!</p>
+        <p><strong>Tikuk-Olum Google Makerton</strong> (Aug 2018)</p>
+        <p>Collaborated with Google engineers and emerged second runner-up.</p>
+        <p>Designed a cooking stove to assist blind individuals in meal preparation.</p>
     </div>
 </div>
 
+<section class="features">
+    <div class="feature visible">
+        <h2>Skills</h2>
+        <p>Proficient in:</p>
+        <ul>
+            <li>C, C++, Python, JavaScript, ASP.NET</li>
+            <li>VBA, Flutter, Dart, Oracle SQL, NoSQL</li>
+            <li>AutoCAD, Adobe Photoshop, Adobe Premiere Pro</li>
+        </ul>
+    </div>
+    <div class="feature visible">
+        <h2>Languages</h2>
+        <p><strong>English:</strong> Proficient</p>
+        <p><strong>Chinese:</strong> Proficient</p>
+    </div>
+    <div class="feature visible">
+        <h2>Hobbies & Interests</h2>
+        <p>DIY Projects, Content Creation (YouTube and Twitch), Sports (Badminton)</p>
+    </div>
+</section>
+
 <footer>
-    <p>&copy; 2025 Your Company Name. All Rights Reserved.</p>
+    <p>&copy; 2025 Low Cheng Feng. All Rights Reserved.</p>
 </footer>
 
 <script>
