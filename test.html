@@ -58,9 +58,10 @@
             pointer-events: none; /* Disable interaction with the pseudo-element */
         }
         .hero {
-            background-image: url('images/professional.png'); /* Replace with your image */
+            position: relative; /* Required for positioning the pseudo-element */
             height: 600px;
-            background-size: cover;
+            background-image: url('images/cosplay.png'); /* Replace with your image */
+            background-size: auto;
             background-position: center;
             text-align: center;
             color: black;
@@ -69,12 +70,31 @@
             justify-content: center;
             flex-direction: column;
         }
+
+        .hero::before {
+            content: "";
+            position: absolute; /* Position it relative to the hero section */
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.7); /* White with transparency */
+            z-index: 1; /* Overlay below the text */
+        }
+
+        .hero h1,
+        .hero p {
+            position: relative; /* Position text above the overlay */
+            z-index: 2; /* Ensure text is above the white overlay */
+        }
         .hero h1 {
             font-size: 4em;
             margin: 0;
         }
         .hero p {
             font-size: 1.5em;
+            position: relative; /* Position text above the overlay */
+            z-index: 2; /* Ensure text is above the white overlay */
         }
         .features {
             display: flex;
@@ -161,8 +181,16 @@
 <section class="features">
     <div class="feature visible">
         <h2>Education</h2>
-        <p><strong>Bachelor’s Degree in Computer Engineering</strong> - Nanyang Technological University (Aug 2021 – Current, CGPA: 3.7/5.00)</p>
-        <p><strong>Diploma in Computer Engineering</strong> - Temasek Polytechnic (Apr 2018 – Apr 2021, CGPA: 3.91/4.00)</p>
+        <p><strong>Bachelor’s Degree in Computer Engineering - Nanyang Technological University</strong>(Aug 2021 – Current)</p>
+            <ul>
+                <li>Expected Second Class Honours</li>
+            </ul>
+        <p><strong>Diploma in Computer Engineering - Temasek Polytechnic</strong> (Apr 2018 – Apr 2021)</p>
+            <ul>
+                <li>Director's List from Year 2019 ~ 2021</li>
+                <li>Class Chairman from Year 2019 ~ 2020</li>
+                <li>Main Community of Engineering Makers Club</li>
+            </ul>
     </div>
     <div class="feature visible">
         <h2>Work Experience</h2>
@@ -192,14 +220,13 @@
             <li>Developed a basic frontend with full functionality, featuring intuitive design.</li>
         </ul>
     </div>
+    <div class="feature visible">
+        <h2>Awards and Achievements</h2>
+        <p><strong>Tikuk-Olum Google Makerton</strong> (Aug 2018)</p>
+        <p>Collaborated with Google engineers and emerged second runner-up.</p>
+        <p>Designed a cooking stove to assist blind individuals in meal preparation.</p>
+    </div>
 </section>
-
-<div class="awards-section">
-    <h2>Awards and Achievements</h2>
-    <p><strong>Tikuk-Olum Google Makerton</strong> (Aug 2018)</p>
-    <p>Collaborated with Google engineers and emerged second runner-up.</p>
-    <p>Designed a cooking stove to assist blind individuals in meal preparation.</p>
-</div>
 
 <section class="features">
     <h2>Skills</h2>
@@ -223,12 +250,14 @@
 <section class="features">
     <div class="feature visible">
         <h2>Languages</h2>
-        <p><strong>English:</strong> Proficient</p>
-        <p><strong>Chinese:</strong> Proficient</p>
+        <p><strong>English:</strong> Proficient in both written and spoken</p>
+        <p><strong>Chinese:</strong> Proficient in spoken</p>
     </div>
     <div class="feature visible">
         <h2>Hobbies & Interests</h2>
-        <p>DIY Projects, Content Creation (YouTube and Twitch), Sports (Badminton)</p>
+        <p>DIY Projects </p>
+        <p>Content Creation (YouTube and Twitch),</p>     
+        <p>Sports (Badminton)</p>
     </div>
 </section>
 
