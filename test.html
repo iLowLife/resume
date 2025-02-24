@@ -18,10 +18,15 @@
             padding: 20px;
             text-align: center;
         }
-        nav {
-            margin: 0;
-            padding: 0;
-            list-style-type: none;
+        nav a {
+            color: white; /* Text color */
+            text-decoration: none; /* Remove underline */
+            padding: 10px 15px; /* Add some padding */
+        }
+
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.3); /* Background on hover */
+            border-radius: 5px; /* Slightly rounded corners */
         }
         nav li {
             display: inline;
@@ -151,6 +156,7 @@
             animation: spin 5s infinite linear; /* Spin animation */
             margin: 20px auto; /* Center the image container */
         }
+        
         @keyframes spin {
             from { transform: rotateY(0); }
             to { transform: rotateY(360deg); }
@@ -214,9 +220,9 @@
 <header>
     <nav>
         <ul>
-            <a> Home </a>
-            <a> Projects </a>
-            <a> Contact</a>
+            <li><a href="test.html">Home</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="contact.html">Contact</a></li>
         </ul>
     </nav>
 </header>
