@@ -155,6 +155,58 @@
             from { transform: rotateY(0); }
             to { transform: rotateY(360deg); }
         }
+        @media (max-width: 768px) {
+            nav li {
+                display: block;
+                margin: 5px 0;
+            }
+            .hero h1 {
+                font-size: 1.8em;
+            }
+            .hero p {
+                font-size: 0.9em;
+            }
+            .scroll-card {
+                width: 95%;
+                margin: 15px auto;
+            }
+            .features {
+                padding: 10px;
+            }
+            .feature p, .feature ul {
+                font-size: 0.85em;
+                max-width: 100%;
+                text-align: center;
+            }
+            .skills-container {
+                margin: 10px 0;
+            }
+            .skill-card {
+                width: 80px;
+                font-size: 0.8em;
+            }
+        }
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.5em;
+            }
+            .hero p {
+                font-size: 0.8em;
+            }
+            .scroll-card {
+                padding: 10px;
+            }
+            .feature h2 {
+                font-size: 1.2em;
+            }
+            .feature p, .feature ul {
+                font-size: 0.8em;
+            }
+            .skill-card {
+                width: 70px;
+                font-size: 0.7em;
+            }
+        }
     </style>
 </head>
 <body>
