@@ -1,0 +1,32 @@
+{
+  "personalInfo": {
+    "name": "John Developer",
+    "tagline": "Full-Stack Developer & 3D Web Enthusiast"
+  },
+  "sections": [
+    {
+      "title": "ABOUT ME",
+      "content": "Full-Stack Developer\n5+ Years Experience\nPassionate about 3D Web\nCreating immersive experiences"
+    },
+    {
+      "title": "SKILLS",
+      "content": "React • Three.js • Node.js\nTypeScript • WebGL • GLSL\nUI/UX Design • Animation\nPerformance Optimization"
+    },
+    {
+      "title": "EXPERIENCE",
+      "content": "Senior Developer\nTech Corp 2021-2024\nLed 3D web projects\n\nJunior Developer\nStartup Inc 2019-2021\nBuilt interactive UIs"
+    },
+    {
+      "title": "EDUCATION",
+      "content": "B.S. Computer Science\nTech University\nGraduated 2019\nHonors: Magna Cum Laude"
+    },
+    {
+      "title": "PROJECTS",
+      "content": "3D Portfolio Website\nInteractive E-commerce\nAI Chat Application\nWebGL Game Engine\nVirtual Exhibition Space"
+    },
+    {
+      "title": "CONTACT",
+      "content": "john@developer.com\ngithub.com/johndev\nlinkedin.com/in/johndev\ntwitter.com/johndev"
+    }
+  ]
+}
