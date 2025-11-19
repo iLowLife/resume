@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Low Cheng Feng - Interactive Resume</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #game-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #world {
+            position: absolute;
+            width: 1200px;
+            height: 4000px;
+            background: linear-gradient(to bottom, 
+                #87CEEB 0%, 
+                #87CEEB 20%, 
+                #98D8E8 40%,
+                #A8E8F0 60%,
+                #90EE90 80%, 
+                #90EE90 100%);
+            transition: transform 0.1s ease-out;
+        }
+
+        /* Main vertical road */
+        .road {
+            position: absolute;
+            background: #404040;
+        }
+
+        .road-vertical {
+            width: 150px;
+            height: 100%;
+            left: 525px;
+            top: 0;
+            background: linear-gradient(to right, 
+                #2a2a2a 0%, 
+                #404040 10%, 
+                #404040 90%, 
+                #2a2a2a 100%);
+            border-left: 5px solid #FFD700;
+            border-right: 5px solid #FFD700;
+        }
+
+        /* Road lane markings */
+        .lane-marking {
+            position: absolute;
+            width: 10px;
+            height: 50px;
+            background: white;
+            left: 595px;
+        }
+
+        /* Sidewalks */
+        .sidewalk-left {
+            position: absolute;
+            width: 80px;
+            height: 100%;
+            left: 440px;
+            background: #8B8680;
+            border-right: 3px solid #696969;
+        }
+
+        .sidewalk-right {
+            position: absolute;
+            width: 80px;
+            height: 100%;
+            left: 680px;
+            background: #8B8680;
+            border-left: 3px solid #696969;
+        }
+
+        #car {
+            position: absolute;
+            width: 50px;
+            height: 80px;
+            left: 575px;
+            top: 3800px;
+            transition: transform 0.1s ease-out;
+            z-index: 100;
+        }
+
+        #car::before {
+            content: '🚗';
+            font-size: 50px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Resume Cards */
+        .resume-card {
+            position: absolute;
+            background: white;
+            border: 4px solid #667eea;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            width: 350px;
+            z-index: 50;
+        }
+
+        .resume-card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 8px;
+            font-size: 24px;
+        }
+
+        .resume-card p,
+        .resume-card ul {
+            color: #333;
+            line-height: 1.6;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+
+        .resume-card ul {
+            padding-left: 20px;
+        }
+
+        .resume-card li {
+            margin: 5px 0;
+        }
+
+        /* Position cards along the road - alternating left and right */
+        #start-sign {
+            top: 3600px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FFD700;
+            border-color: #FFA500;
+            text-align: center;
+            width: 300px;
+            animation: pulse 2s infinite;
+        }
+
+        #start-sign h2 {
+            color: #000;
+            border-color: #FFA500;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+        }
+
+        #about-card {
+            top: 3100px;
+            left: 50px;
+        }
+
+        #specialization-card {
+            top: 2700px;
+            right: 50px;
+        }
+
+        #education-card {
+            top: 2200px;
+            left: 50px;
+        }
+
+        #experience-card {
+            top: 1700px;
+            right: 50px;
+        }
+
+        #projects-card {
+            top: 1200px;
+            left: 50px;
+        }
+
+        #skills-card {
+            top: 700px;
+            right: 50px;
+        }
+
+        #contact-card {
+            top: 200px;
+            left: 50px;
+        }
+
+        #finish-sign {
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            border-color: #45a049;
+            text-align: center;
+            width: 300px;
+        }
+
+        #finish-sign h2 {
+            color: white;
+            border-color: white;
+        }
+
+        #finish-sign p {
+            color: white;
+        }
+
+        /* Info panel */
+        #info-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        #info-panel h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        #info-panel p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-item {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        /* Decorative elements */
+        .tree {
+            position: absolute;
+            font-size: 50px;
+            z-index: 10;
+        }
+
+        .building {
+            position: absolute;
+            background: linear-gradient(to bottom, #8B4513, #654321);
+            border: 3px solid #654321;
+            border-radius: 5px 5px 0 0;
+            z-index: 10;
+        }
+
+        .window {
+            position: absolute;
+            background: #FFD700;
+            width: 15px;
+            height: 20px;
+            border: 1px solid #000;
+        }
+
+        .cloud {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0.7;
+            z-index: 5;
+        }
+
+        .streetlight {
+            position: absolute;
+            font-size: 40px;
+            z-index: 60;
+        }
+
+        .arrow {
+            position: absolute;
+            font-size: 60px;
+            z-index: 60;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="world">
+            <!-- Main Road -->
+            <div class="road road-vertical"></div>
+            
+            <!-- Sidewalks -->
+            <div class="sidewalk-left"></div>
+            <div class="sidewalk-right"></div>
+
+            <!-- Lane markings -->
+            <div class="lane-marking" style="top: 100px;"></div>
+            <div class="lane-marking" style="top: 250px;"></div>
+            <div class="lane-marking" style="top: 400px;"></div>
+            <div class="lane-marking" style="top: 550px;"></div>
+            <div class="lane-marking" style="top: 700px;"></div>
+            <div class="lane-marking" style="top: 850px;"></div>
+            <div class="lane-marking" style="top: 1000px;"></div>
+            <div class="lane-marking" style="top: 1150px;"></div>
+            <div class="lane-marking" style="top: 1300px;"></div>
+            <div class="lane-marking" style="top: 1450px;"></div>
+            <div class="lane-marking" style="top: 1600px;"></div>
+            <div class="lane-marking" style="top: 1750px;"></div>
+            <div class="lane-marking" style="top: 1900px;"></div>
+            <div class="lane-marking" style="top: 2050px;"></div>
+            <div class="lane-marking" style="top: 2200px;"></div>
+            <div class="lane-marking" style="top: 2350px;"></div>
+            <div class="lane-marking" style="top: 2500px;"></div>
+            <div class="lane-marking" style="top: 2650px;"></div>
+            <div class="lane-marking" style="top: 2800px;"></div>
+            <div class="lane-marking" style="top: 2950px;"></div>
+            <div class="lane-marking" style="top: 3100px;"></div>
+            <div class="lane-marking" style="top: 3250px;"></div>
+            <div class="lane-marking" style="top: 3400px;"></div>
+            <div class="lane-marking" style="top: 3550px;"></div>
+            <div class="lane-marking" style="top: 3700px;"></div>
+            <div class="lane-marking" style="top: 3850px;"></div>
+
+            <!-- Streetlights -->
+            <div class="streetlight" style="top: 3700px; left: 450px;">💡</div>
+            <div class="streetlight" style="top: 3700px; left: 750px;">💡</div>
+            <div class="streetlight" style="top: 3200px; left: 450px;">💡</div>
+            <div class="streetlight" style="top: 3200px; left: 750px;">💡</div>
+            <div class="streetlight" style="top: 2700px; left: 450px;">💡</div>
+            <div class="streetlight" style="top: 2700px; left: 750px;">💡</div>
+            <div class="streetlight" style="top: 2200px; left: 450px;">💡</div>
+            <div class="streetlight" style="top: 2200px; left: 750px;">💡</div>
+            <div class="streetlight" style="top: 1700px; left: 450px;">💡</div>
+            <div class="streetlight" style="top: 1700px; left: 750px;">💡</div>
+            <div class="streetlight" style="top: 1200px; left: 450px;">💡</div>
+            <div class="streetlight" style="top: 1200px; left: 750px;">💡</div>
+            <div class="streetlight" style="top: 700px; left: 450px;">💡</div>
+            <div class="streetlight" style="top: 700px; left: 750px;">💡</div>
+            <div class="streetlight" style="top: 200px; left: 450px;">💡</div>
+            <div class="streetlight" style="top: 200px; left: 750px;">💡</div>
+
+            <!-- Trees on left side -->
+            <div class="tree" style="top: 3500px; left: 100px;">🌲</div>
+            <div class="tree" style="top: 3300px; left: 200px;">🌳</div>
+            <div class="tree" style="top: 2900px; left: 150px;">🌲</div>
+            <div class="tree" style="top: 2500px; left: 100px;">🌳</div>
+            <div class="tree" style="top: 2100px; left: 180px;">🌲</div>
+            <div class="tree" style="top: 1600px; left: 120px;">🌳</div>
+            <div class="tree" style="top: 1100px; left: 160px;">🌲</div>
+            <div class="tree" style="top: 600px; left: 100px;">🌳</div>
+            <div class="tree" style="top: 200px; left: 150px;">🌲</div>
+
+            <!-- Trees on right side -->
+            <div class="tree" style="top: 3400px; right: 100px;">🌳</div>
+            <div class="tree" style="top: 3100px; right: 150px;">🌲</div>
+            <div class="tree" style="top: 2600px; right: 120px;">🌳</div>
+            <div class="tree" style="top: 2200px; right: 180px;">🌲</div>
+            <div class="tree" style="top: 1700px; right: 130px;">🌳</div>
+            <div class="tree" style="top: 1300px; right: 160px;">🌲</div>
+            <div class="tree" style="top: 800px; right: 110px;">🌳</div>
+            <div class="tree" style="top: 400px; right: 140px;">🌲</div>
+
+            <!-- Buildings -->
+            <div class="building" style="top: 3000px; left: 850px; width: 120px; height: 180px;">
+                <div class="window" style="top: 20px; left: 20px;"></div>
+                <div class="window" style="top: 20px; right: 20px;"></div>
+                <div class="window" style="top: 60px; left: 20px;"></div>
+                <div class="window" style="top: 60px; right: 20px;"></div>
+                <div class="window" style="top: 100px; left: 20px;"></div>
+                <div class="window" style="top: 100px; right: 20px;"></div>
+            </div>
+            <div class="building" style="top: 2400px; right: 850px; width: 100px; height: 150px;">
+                <div class="window" style="top: 20px; left: 15px;"></div>
+                <div class="window" style="top: 20px; right: 15px;"></div>
+                <div class="window" style="top: 60px; left: 15px;"></div>
+                <div class="window" style="top: 60px; right: 15px;"></div>
+            </div>
+            <div class="building" style="top: 1500px; left: 900px; width: 140px; height: 220px;">
+                <div class="window" style="top: 20px; left: 20px;"></div>
+                <div class="window" style="top: 20px; right: 20px;"></div>
+                <div class="window" style="top: 70px; left: 20px;"></div>
+                <div class="window" style="top: 70px; right: 20px;"></div>
+                <div class="window" style="top: 120px; left: 20px;"></div>
+                <div class="window" style="top: 120px; right: 20px;"></div>
+                <div class="window" style="top: 170px; left: 20px;"></div>
+                <div class="window" style="top: 170px; right: 20px;"></div>
+            </div>
+            <div class="building" style="top: 900px; right: 880px; width: 110px; height: 170px;">
+                <div class="window" style="top: 20px; left: 18px;"></div>
+                <div class="window" style="top: 20px; right: 18px;"></div>
+                <div class="window" style="top: 70px; left: 18px;"></div>
+                <div class="window" style="top: 70px; right: 18px;"></div>
+                <div class="window" style="top: 120px; left: 18px;"></div>
+                <div class="window" style="top: 120px; right: 18px;"></div>
+            </div>
+
+            <!-- Clouds -->
+            <div class="cloud" style="top: 50px; left: 200px;">☁️</div>
+            <div class="cloud" style="top: 100px; left: 800px;">☁️</div>
+            <div class="cloud" style="top: 150px; left: 400px;">☁️</div>
+            <div class="cloud" style="top: 500px; left: 900px;">☁️</div>
+            <div class="cloud" style="top: 600px; left: 300px;">☁️</div>
+            <div class="cloud" style="top: 1000px; left: 700px;">☁️</div>
+            <div class="cloud" style="top: 1400px; left: 200px;">☁️</div>
+            <div class="cloud" style="top: 1800px; left: 850px;">☁️</div>
+
+            <!-- Directional arrows -->
+            <div class="arrow" style="top: 3650px; left: 570px;">⬆️</div>
+            <div class="arrow" style="top: 3450px; left: 570px;">⬆️</div>
+
+            <!-- Start Sign -->
+            <div class="resume-card" id="start-sign">
+                <h2>🏁 START HERE! 🏁</h2>
+                <p style="font-size: 16px; color: #000;"><strong>Drive upward (W key)</strong></p>
+                <p style="color: #000;">Explore my resume along the road!</p>
+            </div>
+
+            <!-- Resume Cards -->
+            <div class="resume-card" id="about-card">
+                <h2>👨‍💻 ABOUT ME</h2>
+                <p><strong>Low Cheng Feng</strong></p>
+                <p>Computer Engineering Student<br>
+                Nanyang Technological University</p>
+                <p>Fullstack Developer | AI/ML | IoT<br>
+                Founder of Ryuu's Coffee</p>
+                <p style="margin-top: 15px;">Results-driven with hands-on experience in software development, data processing, and automation.</p>
+            </div>
+
+            <div class="resume-card" id="specialization-card">
+                <h2>🎯 SPECIALIZATION</h2>
+                <ul style="font-size: 15px; line-height: 2;">
+                    <li><strong>Fullstack Development</strong></li>
+                    <li><strong>AI & Machine Learning for Computer Vision</strong></li>
+                    <li><strong>Internet of Things with TinyML</strong></li>
+                </ul>
+            </div>
+
+            <div class="resume-card" id="education-card">
+                <h2>🎓 EDUCATION</h2>
+                <p><strong>Bachelor's in Computer Engineering</strong><br>
+                Nanyang Technological University<br>
+                Aug 2021 – Present<br>
+                Expected Second Class Honours</p>
+                <br>
+                <p><strong>Diploma in Computer Engineering</strong><br>
+                Temasek Polytechnic<br>
+                Apr 2018 – Apr 2021<br>
+                Director's List 2019-2021</p>
+            </div>
+
+            <div class="resume-card" id="experience-card">
+                <h2>💼 EXPERIENCE</h2>
+                <p><strong>Process Yield Engineer (Intern)</strong><br>
+                Skyworks Solutions<br>
+                Jan 2024 – Aug 2024</p>
+                <ul>
+                    <li>Created ETL processes & PowerBI dashboards</li>
+                    <li>Cooperated with overseas teams</li>
+                </ul>
+                <br>
+                <p><strong>Software Engineer (Intern)</strong><br>
+                Infineon Technologies<br>
+                Feb 2020 – Aug 2020</p>
+                <ul>
+                    <li>Automated tasks with VBA, 100% efficiency boost</li>
+                </ul>
+            </div>
+
+            <div class="resume-card" id="projects-card">
+                <h2>🚀 PROJECTS</h2>
+                <p><strong>Mobile App for Coffee Business</strong><br>
+                Flutter + Firebase<br>
+                Kiosk system with rewards</p>
+                <br>
+                <p><strong>CV Inventory Tracking System</strong><br>
+                YOLOv11 Object Detection<br>
+                Intuitive frontend design</p>
+                <br>
+                <p><strong>Cooking Stove for the Blind</strong><br>
+                Google Makerton 2018 - 2nd Runner-up</p>
+            </div>
+
+            <div class="resume-card" id="skills-card">
+                <h2>⚡ SKILLS</h2>
+                <p><strong>Programming:</strong><br>
+                Python • C/C++ • JavaScript</p>
+                <p><strong>Web:</strong><br>
+                HTML/CSS • ASP.NET • React Native</p>
+                <p><strong>Mobile:</strong><br>
+                Flutter • Dart</p>
+                <p><strong>Database:</strong><br>
+                Oracle SQL • NoSQL • Firebase</p>
+                <p><strong>Tools:</strong><br>
+                Microsoft Office • VBA • PowerBI</p>
+                <p><strong>Design:</strong><br>
+                AutoCAD • Adobe Photoshop • Premiere Pro</p>
+            </div>
+
+            <div class="resume-card" id="contact-card">
+                <h2>📞 CONTACT</h2>
+                <p><strong>Mobile:</strong> 9118 6584</p>
+                <p><strong>Email:</strong> cheng_feng96@hotmail.com</p>
+                <br>
+                <p style="font-size: 15px; line-height: 1.8;">Feel free to reach out for collaboration, opportunities, or just to connect!</p>
+            </div>
+
+            <!-- Finish Sign -->
+            <div class="resume-card" id="finish-sign">
+                <h2>🎉 CONGRATULATIONS! 🎉</h2>
+                <p><strong>You've reached the end!</strong></p>
+                <p>Thank you for exploring my resume!</p>
+            </div>
+
+            <!-- Car -->
+            <div id="car"></div>
+        </div>
+    </div>
+
+    <div id="info-panel">
+        <h1>Low Cheng Feng</h1>
+        <p>Drive around to explore my resume!</p>
+    </div>
+
+    <div id="controls">
+        <div class="control-item">⬆️ W - Move Up</div>
+        <div class="control-item">⬇️ S - Move Down</div>
+        <div class="control-item">⬅️ A - Move Left</div>
+        <div class="control-item">➡️ D - Move Right</div>
+    </div>
+
+    <script>
+        const car = document.getElementById('car');
+        const world = document.getElementById('world');
+        const gameContainer = document.getElementById('game-container');
+
+        // Car position (actual position in the world)
+        let carX = 575;
+        let carY = 3800;
+        let carRotation = 0;
+
+        // Car speed
+        const speed = 5;
+
+        // Keys pressed
+        const keys = {
+            w: false,
+            a: false,
+            s: false,
+            d: false
+        };
+
+        // Listen for key presses
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            if (keys.hasOwnProperty(key)) {
+                keys[key] = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            const key = e.key.toLowerCase();
+            if (keys.hasOwnProperty(key)) {
+                keys[key] = false;
+            }
+        });
+
+        // Update car rotation based on movement (left or right only)
+        function updateCarRotation(dx, dy) {
+            if (dx > 0) {
+                carRotation = 180; // Facing right (flipped)
+            } else if (dx < 0) {
+                carRotation = 0; // Facing left (default)
+            }
+            // If only moving up/down, keep current rotation
+        }
+
+        // Game loop
+        function gameLoop() {
+            let dx = 0;
+            let dy = 0;
+
+            // Calculate movement
+            if (keys.w) dy -= speed;
+            if (keys.s) dy += speed;
+            if (keys.a) dx -= speed;
+            if (keys.d) dx += speed;
+
+            // Update rotation if moving
+            if (dx !== 0 || dy !== 0) {
+                updateCarRotation(dx, dy);
+            }
+
+            // Update car position
+            carX += dx;
+            carY += dy;
+
+            // World boundaries
+            const worldWidth = 1200;
+            const worldHeight = 4000;
+            const carWidth = 50;
+            const carHeight = 80;
+
+            carX = Math.max(0, Math.min(carX, worldWidth - carWidth));
+            carY = Math.max(0, Math.min(carY, worldHeight - carHeight));
+
+            // Update car position in DOM
+            car.style.left = carX + 'px';
+            car.style.top = carY + 'px';
+            
+            // Flip car horizontally based on direction (0 = right, 180 = left)
+            const scaleX = carRotation === 180 ? -1 : 1;
+            car.style.transform = `scaleX(${scaleX})`;
+
+            // Camera follows car (centered)
+            const containerWidth = gameContainer.clientWidth;
+            const containerHeight = gameContainer.clientHeight;
+
+            const offsetX = containerWidth / 2 - carX - carWidth / 2;
+            const offsetY = containerHeight / 2 - carY - carHeight / 2;
+
+            // Clamp offset so world doesn't show outside bounds
+            const maxOffsetX = 0;
+            const minOffsetX = containerWidth - worldWidth;
+            const maxOffsetY = 0;
+            const minOffsetY = containerHeight - worldHeight;
+
+            const finalOffsetX = Math.max(minOffsetX, Math.min(maxOffsetX, offsetX));
+            const finalOffsetY = Math.max(minOffsetY, Math.min(maxOffsetY, offsetY));
+
+            world.style.transform = `translate(${finalOffsetX}px, ${finalOffsetY}px)`;
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Start game loop
+        gameLoop();
+
+        // Initial camera position
+        const containerWidth = gameContainer.clientWidth;
+        const containerHeight = gameContainer.clientHeight;
+        const offsetX = containerWidth / 2 - carX - 25;
+        const offsetY = containerHeight / 2 - carY - 40;
+        world.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+    </script>
+</body>
+</html>
