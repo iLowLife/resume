@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Interactive Resume</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        #info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        #info h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        #info p {
+            opacity: 0.9;
+            font-size: 12px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(102, 126, 234, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .close-button:hover {
+            background: rgba(102, 126, 234, 1);
+            transform: scale(1.1);
+        }
+
+        .close-button.visible {
+            display: flex;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            z-index: 1000;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+        }
+
+        .control-item {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div id="info">
+        <h1>John Developer</h1>
+        <p>Drag to rotate • Scroll to zoom • Click cards to view</p>
+    </div>
+
+    <button class="close-button" id="closeButton">✕</button>
+
+    <div id="controls">
+        <div class="control-item">🖱️ Drag: Rotate scene</div>
+        <div class="control-item">🔍 Scroll: Zoom in/out</div>
+        <div class="control-item">👆 Click: View card</div>
+        <div class="control-item">💨 Physics: Active</div>
+    </div>
+
+    <div class="loading" id="loading">Loading 3D Environment...</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.Fog(0x667eea, 10, 50);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 15;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 10, 7);
+        directionalLight.castShadow = true;
+        scene.add(directionalLight);
+
+        const pointLight = new THREE.PointLight(0x00ffff, 0.5, 50);
+        pointLight.position.set(-5, 5, 5);
+        scene.add(pointLight);
+
+        // Resume Data
+        const resumeData = [
+            { title: 'ABOUT ME', content: 'Full-Stack Developer\n5+ Years Experience\nPassionate about 3D Web' },
+            { title: 'SKILLS', content: 'React • Three.js • Node.js\nTypeScript • WebGL\nUI/UX Design' },
+            { title: 'EXPERIENCE', content: 'Senior Developer\nTech Corp 2021-2024\n\nJunior Developer\nStartup Inc 2019-2021' },
+            { title: 'EDUCATION', content: 'B.S. Computer Science\nTech University\nGraduated 2019' },
+            { title: 'PROJECTS', content: '3D Portfolio Site\nE-commerce Platform\nAI Chat Application' },
+            { title: 'CONTACT', content: 'john@developer.com\ngithub.com/johndev\nlinkedin.com/in/johndev' }
+        ];
+
+        // Physics properties
+        let isZoomed = false;
+        let zoomedCard = null;
+        let originalCameraPosition = new THREE.Vector3();
+        let originalSceneRotation = new THREE.Euler();
+        let animationProgress = 0;
+        let zoomDuration = 1.0; // seconds
+
+        class PhysicsCard {
+            constructor(mesh, index, total) {
+                this.mesh = mesh;
+                this.velocity = new THREE.Vector3(0, 0, 0);
+                this.acceleration = new THREE.Vector3(0, 0, 0);
+                this.targetRotation = new THREE.Euler(0, 0, 0);
+                this.damping = 0.95;
+                this.windResistance = 0.02;
+                
+                // Arrange in a circle
+                const angle = (index / total) * Math.PI * 2;
+                const radius = 8;
+                this.originalPosition = new THREE.Vector3(
+                    Math.cos(angle) * radius,
+                    Math.sin(angle) * 3,
+                    Math.sin(angle) * radius
+                );
+                this.mesh.position.copy(this.originalPosition);
+                
+                // Set rotation to face center
+                this.mesh.lookAt(0, this.mesh.position.y, 0);
+                this.baseRotation = this.mesh.rotation.clone();
+            }
+
+            applyForce(force) {
+                this.acceleration.add(force);
+            }
+
+            update(deltaRotation) {
+                // Apply wind resistance based on scene rotation
+                const windForce = new THREE.Vector3(
+                    -deltaRotation.x * this.windResistance,
+                    -deltaRotation.y * this.windResistance,
+                    0
+                );
+                this.applyForce(windForce);
+
+                // Update physics
+                this.velocity.add(this.acceleration);
+                this.velocity.multiplyScalar(this.damping);
+                
+                // Apply position offset from wind
+                const offset = this.velocity.clone().multiplyScalar(0.5);
+                this.mesh.position.copy(this.originalPosition).add(offset);
+
+                // Spring back to original position
+                const springForce = this.originalPosition.clone()
+                    .sub(this.mesh.position)
+                    .multiplyScalar(0.01);
+                this.applyForce(springForce);
+
+                // Add subtle floating animation
+                this.mesh.position.y += Math.sin(Date.now() * 0.001 + this.mesh.position.x) * 0.002;
+
+                // Reset acceleration
+                this.acceleration.multiplyScalar(0);
+
+                // Gentle rotation wobble from wind
+                this.mesh.rotation.copy(this.baseRotation);
+                this.mesh.rotation.x += this.velocity.y * 0.2;
+                this.mesh.rotation.y += this.velocity.x * 0.2;
+            }
+        }
+
+        // Create resume cards
+        const cards = [];
+        const physicsCards = [];
+
+        resumeData.forEach((data, index) => {
+            // Create card
+            const cardGroup = new THREE.Group();
+
+            // Card background
+            const cardGeometry = new THREE.BoxGeometry(3, 4, 0.1);
+            const cardMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffffff,
+                metalness: 0.3,
+                roughness: 0.4,
+                transparent: true,
+                opacity: 0.95
+            });
+            const cardMesh = new THREE.Mesh(cardGeometry, cardMaterial);
+            cardMesh.castShadow = true;
+            cardMesh.receiveShadow = true;
+            cardGroup.add(cardMesh);
+
+            // Card border
+            const borderGeometry = new THREE.BoxGeometry(3.1, 4.1, 0.12);
+            const borderMaterial = new THREE.MeshStandardMaterial({
+                color: 0x667eea,
+                metalness: 0.8,
+                roughness: 0.2
+            });
+            const borderMesh = new THREE.Mesh(borderGeometry, borderMaterial);
+            borderMesh.position.z = -0.06;
+            cardGroup.add(borderMesh);
+
+            // Create back of card with large title
+            const backGeometry = new THREE.BoxGeometry(3, 4, 0.01);
+            const backMaterial = new THREE.MeshStandardMaterial({
+                color: 0x667eea,
+                metalness: 0.3,
+                roughness: 0.4
+            });
+            const backMesh = new THREE.Mesh(backGeometry, backMaterial);
+            backMesh.position.z = -0.11;
+            cardGroup.add(backMesh);
+
+            // Create large title text for back of card
+            const backCanvas = document.createElement('canvas');
+            backCanvas.width = 512;
+            backCanvas.height = 680;
+            const backCtx = backCanvas.getContext('2d');
+
+            // Background gradient
+            const gradient = backCtx.createLinearGradient(0, 0, 0, 680);
+            gradient.addColorStop(0, '#764ba2');
+            gradient.addColorStop(1, '#667eea');
+            backCtx.fillStyle = gradient;
+            backCtx.fillRect(0, 0, backCanvas.width, backCanvas.height);
+
+            // Large title text
+            backCtx.fillStyle = '#ffffff';
+            backCtx.font = 'bold 72px Arial';
+            backCtx.textAlign = 'center';
+            backCtx.textBaseline = 'middle';
+            
+            // Word wrap for long titles
+            const words = data.title.split(' ');
+            let backLine = '';
+            let y = 340; // Center vertically
+            const lineHeight = 80;
+            const maxWidth = 450;
+            const backLines = [];
+
+            for (let i = 0; i < words.length; i++) {
+                const testLine = backLine + words[i] + ' ';
+                const metrics = backCtx.measureText(testLine);
+                
+                if (metrics.width > maxWidth && i > 0) {
+                    backLines.push(backLine);
+                    backLine = words[i] + ' ';
+                } else {
+                    backLine = testLine;
+                }
+            }
+            backLines.push(backLine);
+
+            // Center the text block
+            const startY = y - ((backLines.length - 1) * lineHeight) / 2;
+            
+            backLines.forEach((line, i) => {
+                backCtx.fillText(line.trim(), 256, startY + i * lineHeight);
+            });
+
+            const backTexture = new THREE.CanvasTexture(backCanvas);
+            backTexture.minFilter = THREE.LinearFilter;
+            
+            const backTextMaterial = new THREE.MeshBasicMaterial({
+                map: backTexture
+            });
+            const backTextGeometry = new THREE.PlaneGeometry(3, 4);
+            const backTextMesh = new THREE.Mesh(backTextGeometry, backTextMaterial);
+            backTextMesh.position.z = -0.12;
+            backTextMesh.rotation.y = Math.PI; // Flip to show on back
+            cardGroup.add(backTextMesh);
+
+            // Create text using canvas texture
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 680;
+            const ctx = canvas.getContext('2d');
+
+            // Background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Title
+            ctx.fillStyle = '#667eea';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(data.title, 256, 80);
+
+            // Line
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(100, 120);
+            ctx.lineTo(412, 120);
+            ctx.stroke();
+
+            // Content
+            ctx.fillStyle = '#333333';
+            ctx.font = '28px Arial';
+            ctx.textAlign = 'left';
+            
+            const lines = data.content.split('\n');
+            lines.forEach((line, i) => {
+                ctx.fillText(line, 50, 180 + i * 45);
+            });
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            
+            const textMaterial = new THREE.MeshBasicMaterial({
+                map: texture,
+                transparent: true
+            });
+            const textGeometry = new THREE.PlaneGeometry(3, 4);
+            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+            textMesh.position.z = 0.06;
+            cardGroup.add(textMesh);
+
+            scene.add(cardGroup);
+            cards.push(cardGroup);
+            physicsCards.push(new PhysicsCard(cardGroup, index, resumeData.length));
+        });
+
+        // Create particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1000;
+        const positions = new Float32Array(particlesCount * 3);
+
+        for (let i = 0; i < particlesCount * 3; i++) {
+            positions[i] = (Math.random() - 0.5) * 50;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 0.05,
+            transparent: true,
+            opacity: 0.6
+        });
+        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particles);
+
+        // Raycaster for click detection
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // Mouse interaction
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let rotation = { x: 0, y: 0 };
+        let targetRotation = { x: 0, y: 0 };
+        let deltaRotation = { x: 0, y: 0 };
+
+        renderer.domElement.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        });
+
+        // Click handler for zooming
+        renderer.domElement.addEventListener('click', (e) => {
+            if (isZoomed) return; // Ignore clicks when already zoomed
+
+            // Calculate mouse position in normalized device coordinates
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            // Update raycaster
+            raycaster.setFromCamera(mouse, camera);
+
+            // Check for intersections with cards
+            const intersects = raycaster.intersectObjects(cards, true);
+
+            if (intersects.length > 0) {
+                // Find which card was clicked
+                let clickedCard = null;
+                for (let card of cards) {
+                    if (card === intersects[0].object || card.children.includes(intersects[0].object)) {
+                        clickedCard = card;
+                        break;
+                    }
+                }
+
+                if (clickedCard) {
+                    zoomToCard(clickedCard);
+                }
+            }
+        });
+
+        renderer.domElement.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                deltaRotation = {
+                    x: e.clientX - previousMousePosition.x,
+                    y: e.clientY - previousMousePosition.y
+                };
+
+                targetRotation.y += deltaRotation.x * 0.005;
+                targetRotation.x += deltaRotation.y * 0.005;
+
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            } else {
+                deltaRotation = { x: 0, y: 0 };
+            }
+        });
+
+        renderer.domElement.addEventListener('mouseup', () => {
+            isDragging = false;
+            deltaRotation = { x: 0, y: 0 };
+        });
+
+        renderer.domElement.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            camera.position.z += e.deltaY * 0.01;
+            camera.position.z = Math.max(8, Math.min(25, camera.position.z));
+        });
+
+        // Auto-rotation when not dragging
+        let autoRotate = true;
+        let autoRotateSpeed = 0.001;
+
+        // Easing function for smooth animation
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // Zoom to card function
+        function zoomToCard(card) {
+            if (isZoomed) return;
+
+            isZoomed = true;
+            zoomedCard = card;
+            animationProgress = 0;
+
+            // Store original positions
+            originalCameraPosition.copy(camera.position);
+            originalSceneRotation.copy(scene.rotation);
+
+            // Show close button
+            document.getElementById('closeButton').classList.add('visible');
+            document.getElementById('controls').style.display = 'none';
+
+            // Disable auto-rotation
+            autoRotate = false;
+        }
+
+        // Unzoom function
+        function unzoomCard() {
+            if (!isZoomed) return;
+
+            isZoomed = false;
+            animationProgress = 0;
+
+            // Hide close button
+            document.getElementById('closeButton').classList.remove('visible');
+            document.getElementById('controls').style.display = 'block';
+
+            // Re-enable auto-rotation
+            autoRotate = true;
+
+            zoomedCard = null;
+        }
+
+        // Close button handler
+        document.getElementById('closeButton').addEventListener('click', unzoomCard);
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Handle zoom animation
+            if (isZoomed && zoomedCard && animationProgress < 1) {
+                animationProgress += 0.016 / zoomDuration; // Assuming 60fps
+                animationProgress = Math.min(animationProgress, 1);
+
+                const easedProgress = easeInOutCubic(animationProgress);
+
+                // Get card's world position
+                const cardWorldPosition = new THREE.Vector3();
+                zoomedCard.getWorldPosition(cardWorldPosition);
+
+                // Calculate target camera position (in front of the card)
+                const cardWorldQuaternion = new THREE.Quaternion();
+                zoomedCard.getWorldQuaternion(cardWorldQuaternion);
+                
+                const offset = new THREE.Vector3(0, 0, 6);
+                offset.applyQuaternion(cardWorldQuaternion);
+                const targetCameraPosition = cardWorldPosition.clone().add(offset);
+
+                // Interpolate camera position
+                camera.position.lerpVectors(originalCameraPosition, targetCameraPosition, easedProgress);
+
+                // Make camera look at card
+                const targetLookAt = cardWorldPosition.clone();
+                const currentLookAt = new THREE.Vector3();
+                camera.getWorldDirection(currentLookAt);
+                currentLookAt.multiplyScalar(10).add(camera.position);
+                
+                const lookAtPosition = new THREE.Vector3().lerpVectors(currentLookAt, targetLookAt, easedProgress);
+                camera.lookAt(lookAtPosition);
+
+                // Fade out other cards
+                cards.forEach(card => {
+                    if (card !== zoomedCard) {
+                        card.children.forEach(child => {
+                            if (child.material) {
+                                child.material.opacity = 1 - (easedProgress * 0.7);
+                            }
+                        });
+                    }
+                });
+
+                // Scale up the zoomed card
+                const targetScale = 2.5; // Makes it take up ~80% of screen
+                const currentScale = 1 + (targetScale - 1) * easedProgress;
+                zoomedCard.scale.set(currentScale, currentScale, currentScale);
+
+            } else if (!isZoomed && animationProgress < 1) {
+                // Zoom out animation
+                animationProgress += 0.016 / zoomDuration;
+                animationProgress = Math.min(animationProgress, 1);
+
+                const easedProgress = easeInOutCubic(animationProgress);
+
+                // Get target position from original
+                const targetCameraPosition = originalCameraPosition;
+                
+                // Interpolate back
+                camera.position.lerp(targetCameraPosition, easedProgress);
+
+                // Reset camera to look at scene
+                const lookTarget = new THREE.Vector3(0, 0, 0);
+                camera.lookAt(lookTarget);
+
+                // Fade cards back in
+                cards.forEach(card => {
+                    const targetOpacity = 1;
+                    card.children.forEach(child => {
+                        if (child.material) {
+                            const currentOpacity = child.material.opacity || 0.3;
+                            child.material.opacity = currentOpacity + (targetOpacity - currentOpacity) * easedProgress * 0.5;
+                        }
+                    });
+
+                    // Reset scale
+                    const currentScale = card.scale.x;
+                    const newScale = currentScale + (1 - currentScale) * easedProgress * 0.2;
+                    card.scale.set(newScale, newScale, newScale);
+                });
+            }
+
+            // Only update rotation and physics when not zoomed
+            if (!isZoomed) {
+                // Smooth rotation interpolation
+                rotation.x += (targetRotation.x - rotation.x) * 0.1;
+                rotation.y += (targetRotation.y - rotation.y) * 0.1;
+
+                // Auto-rotate when not dragging
+                if (!isDragging) {
+                    targetRotation.y += autoRotateSpeed;
+                    deltaRotation = { x: autoRotateSpeed * 100, y: 0 };
+                }
+
+                // Update physics for all cards
+                physicsCards.forEach(card => {
+                    card.update(deltaRotation);
+                });
+
+                // Rotate entire scene
+                scene.rotation.y = rotation.y;
+                scene.rotation.x = rotation.x;
+
+                // Animate particles
+                particles.rotation.y += 0.0002;
+            } else {
+                // Stop physics and rotation when zoomed
+                deltaRotation = { x: 0, y: 0 };
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Remove loading screen
+        setTimeout(() => {
+            document.getElementById('loading').style.display = 'none';
+        }, 500);
+
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>
