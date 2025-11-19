@@ -130,8 +130,13 @@
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         camera.position.z = 15;
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true, 
+            alpha: true,
+            powerPreference: "high-performance"
+        });
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         document.getElementById('canvas-container').appendChild(renderer.domElement);
@@ -153,7 +158,7 @@
         const resumeData = [
             { 
                 title: 'ABOUT ME', 
-                content: 'Low Cheng Feng\nComputer Engineer\nITE Colleage East\nTemasek Polytechnic\nNanyang Technological University\nFullstack Dev | AI/ML | IoT\nFounder of Ryuu\'s Coffee' 
+                content: 'Low Cheng Feng\nComputer Engineering Student\nNanyang Technological University\nFullstack Dev | AI/ML | IoT\nFounder of Ryuu\'s Coffee' 
             },
             { 
                 title: 'CONTACT', 
@@ -288,7 +293,7 @@
             const backCanvas = document.createElement('canvas');
             backCanvas.width = 512;
             backCanvas.height = 680;
-            const backCtx = backCanvas.getContext('2d');
+            const backCtx = backCanvas.getContext('2d', { alpha: false });
 
             // Background gradient
             const gradient = backCtx.createLinearGradient(0, 0, 0, 680);
@@ -333,6 +338,8 @@
 
             const backTexture = new THREE.CanvasTexture(backCanvas);
             backTexture.minFilter = THREE.LinearFilter;
+            backTexture.magFilter = THREE.LinearFilter;
+            backTexture.generateMipmaps = false;
             
             const backTextMaterial = new THREE.MeshBasicMaterial({
                 map: backTexture,
@@ -348,7 +355,7 @@
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 680;
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d', { alpha: false });
 
             // Background
             ctx.fillStyle = '#ffffff';
@@ -380,6 +387,8 @@
 
             const texture = new THREE.CanvasTexture(canvas);
             texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            texture.generateMipmaps = false;
             
             const textMaterial = new THREE.MeshBasicMaterial({
                 map: texture,
@@ -398,7 +407,7 @@
 
         // Create particles
         const particlesGeometry = new THREE.BufferGeometry();
-        const particlesCount = 1000;
+        const particlesCount = 300; // Reduced from 1000
         const positions = new Float32Array(particlesCount * 3);
 
         for (let i = 0; i < particlesCount * 3; i++) {
@@ -421,6 +430,7 @@
 
         // Mouse interaction
         let isDragging = false;
+        let hasDragged = false;
         let previousMousePosition = { x: 0, y: 0 };
         let rotation = { x: 0, y: 0 };
         let targetRotation = { x: 0, y: 0 };
@@ -428,12 +438,14 @@
 
         renderer.domElement.addEventListener('mousedown', (e) => {
             isDragging = true;
+            hasDragged = false;
             previousMousePosition = { x: e.clientX, y: e.clientY };
         });
 
         // Click handler for zooming
         renderer.domElement.addEventListener('click', (e) => {
-            if (isZoomed) return; // Ignore clicks when already zoomed
+            // Don't zoom if user was dragging
+            if (hasDragged || isZoomed) return;
 
             // Calculate mouse position in normalized device coordinates
             mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -463,6 +475,7 @@
 
         renderer.domElement.addEventListener('mousemove', (e) => {
             if (isDragging) {
+                hasDragged = true;
                 deltaRotation = {
                     x: e.clientX - previousMousePosition.x,
                     y: e.clientY - previousMousePosition.y
@@ -538,12 +551,18 @@
         document.getElementById('closeButton').addEventListener('click', unzoomCard);
 
         // Animation loop
+        let lastTime = Date.now();
+        
         function animate() {
             requestAnimationFrame(animate);
 
+            const currentTime = Date.now();
+            const deltaTime = (currentTime - lastTime) / 1000;
+            lastTime = currentTime;
+
             // Handle zoom animation
             if (isZoomed && zoomedCard && animationProgress < 1) {
-                animationProgress += 0.016 / zoomDuration; // Assuming 60fps
+                animationProgress += deltaTime / zoomDuration;
                 animationProgress = Math.min(animationProgress, 1);
 
                 const easedProgress = easeInOutCubic(animationProgress);
@@ -564,62 +583,61 @@
                 camera.position.lerpVectors(originalCameraPosition, targetCameraPosition, easedProgress);
 
                 // Make camera look at card
-                const targetLookAt = cardWorldPosition.clone();
-                const currentLookAt = new THREE.Vector3();
-                camera.getWorldDirection(currentLookAt);
-                currentLookAt.multiplyScalar(10).add(camera.position);
-                
-                const lookAtPosition = new THREE.Vector3().lerpVectors(currentLookAt, targetLookAt, easedProgress);
-                camera.lookAt(lookAtPosition);
+                camera.lookAt(cardWorldPosition);
 
-                // Fade out other cards
-                cards.forEach(card => {
-                    if (card !== zoomedCard) {
-                        card.children.forEach(child => {
-                            if (child.material) {
-                                child.material.opacity = 1 - (easedProgress * 0.7);
-                            }
-                        });
-                    }
-                });
+                // Fade out other cards - only update every few frames
+                if (Math.floor(animationProgress * 20) % 2 === 0) {
+                    cards.forEach(card => {
+                        if (card !== zoomedCard) {
+                            card.children.forEach(child => {
+                                if (child.material && child.material.opacity !== undefined) {
+                                    child.material.opacity = 1 - (easedProgress * 0.7);
+                                }
+                            });
+                        }
+                    });
+                }
 
                 // Scale up the zoomed card
-                const targetScale = 2.5; // Makes it take up ~80% of screen
+                const targetScale = 2.5;
                 const currentScale = 1 + (targetScale - 1) * easedProgress;
                 zoomedCard.scale.set(currentScale, currentScale, currentScale);
 
-            } else if (!isZoomed && animationProgress < 1) {
+            } else if (!isZoomed && zoomedCard && animationProgress < 1) {
                 // Zoom out animation
-                animationProgress += 0.016 / zoomDuration;
+                animationProgress += deltaTime / zoomDuration;
                 animationProgress = Math.min(animationProgress, 1);
 
                 const easedProgress = easeInOutCubic(animationProgress);
 
-                // Get target position from original
-                const targetCameraPosition = originalCameraPosition;
-                
                 // Interpolate back
-                camera.position.lerp(targetCameraPosition, easedProgress);
+                camera.position.lerp(originalCameraPosition, easedProgress);
 
                 // Reset camera to look at scene
                 const lookTarget = new THREE.Vector3(0, 0, 0);
                 camera.lookAt(lookTarget);
 
-                // Fade cards back in
-                cards.forEach(card => {
-                    const targetOpacity = 1;
-                    card.children.forEach(child => {
-                        if (child.material) {
-                            const currentOpacity = child.material.opacity || 0.3;
-                            child.material.opacity = currentOpacity + (targetOpacity - currentOpacity) * easedProgress * 0.5;
-                        }
-                    });
+                // Fade cards back in - only update every few frames
+                if (Math.floor(animationProgress * 20) % 2 === 0) {
+                    cards.forEach(card => {
+                        card.children.forEach(child => {
+                            if (child.material && child.material.opacity !== undefined) {
+                                const targetOpacity = child.material.transparent ? 0.95 : 1;
+                                child.material.opacity = Math.min(child.material.opacity + 0.1, targetOpacity);
+                            }
+                        });
 
-                    // Reset scale
-                    const currentScale = card.scale.x;
-                    const newScale = currentScale + (1 - currentScale) * easedProgress * 0.2;
-                    card.scale.set(newScale, newScale, newScale);
-                });
+                        // Reset scale
+                        const currentScale = card.scale.x;
+                        const newScale = currentScale + (1 - currentScale) * 0.2;
+                        card.scale.set(newScale, newScale, newScale);
+                    });
+                }
+
+                // Clear zoomedCard when animation is complete
+                if (animationProgress >= 1) {
+                    zoomedCard = null;
+                }
             }
 
             // Only update rotation and physics when not zoomed
@@ -629,15 +647,17 @@
                 rotation.y += (targetRotation.y - rotation.y) * 0.1;
 
                 // Auto-rotate when not dragging
-                if (!isDragging) {
+                if (!isDragging && autoRotate) {
                     targetRotation.y += autoRotateSpeed;
                     deltaRotation = { x: autoRotateSpeed * 100, y: 0 };
                 }
 
-                // Update physics for all cards
-                physicsCards.forEach(card => {
-                    card.update(deltaRotation);
-                });
+                // Update physics for all cards - only if there's significant movement
+                if (Math.abs(deltaRotation.x) > 0.01 || Math.abs(deltaRotation.y) > 0.01) {
+                    physicsCards.forEach(card => {
+                        card.update(deltaRotation);
+                    });
+                }
 
                 // Rotate entire scene
                 scene.rotation.y = rotation.y;
